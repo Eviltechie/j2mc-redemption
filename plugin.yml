@@ -1,0 +1,15 @@
+name: Redemption
+main: to.joe.j2mc.redemption.J2MC_Redemption
+version: 0.1
+website: http://forums.joe.to
+author: Eviltechie
+description: Delivers items
+commands:
+  redeem:
+    description: Redeem items or coupons
+    usage: /redeem
+    permission: j2mc.redemption.redeem
+    permission-message: No soup for you
+permissions:
+  j2mc.redemption.redeem:
+    description: Redeem items or coupons
