@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import to.joe.j2mc.core.J2MC_Manager;
 import to.joe.j2mc.core.command.MasterCommand;
@@ -44,7 +45,7 @@ public class RedeemCommand extends MasterCommand {
         }
         if (args[0].equalsIgnoreCase("list") && args.length == 1) {
             try {
-                PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM coupons WHERE player LIKE ? AND (expiry > ? OR expiry IS NULL) AND (server = ? OR server IS NULL)");
+                PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM coupons WHERE player LIKE ? AND (expiry > ? OR expiry IS NULL) AND (server = ? OR server IS NULL) AND redeemed IS NULL");
                 ps.setString(1, player.getName());
                 ps.setLong(2, System.currentTimeMillis() / 1000L);
                 ps.setInt(3, J2MC_Manager.getServerID());
@@ -67,7 +68,7 @@ public class RedeemCommand extends MasterCommand {
         }
         if (args[0].equalsIgnoreCase("details") && args.length == 2) {
             try {
-                PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM coupons WHERE player LIKE ? AND (expiry > OR expiry IS NULL ?) AND (server = ? OR server IS NULL) AND id = ?");
+                PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM coupons WHERE player LIKE ? AND (expiry > ? OR expiry IS NULL) AND (server = ? OR server IS NULL) AND id = ? and redeemed IS NULL");
                 ps.setString(1, player.getName());
                 ps.setLong(2, System.currentTimeMillis() / 1000L);
                 ps.setInt(3, J2MC_Manager.getServerID());
@@ -94,7 +95,30 @@ public class RedeemCommand extends MasterCommand {
             return;
         }
         if (args[0].equalsIgnoreCase("coupon") && args.length == 2) {
-            //TODO Redeem coupon
+            try {
+                PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM coupons WHERE player IS NULL AND code LIKE ? AND (expiry > ? OR expiry IS NULL) AND (server = ? OR server IS NULL) AND redeemed IS NULL");
+                ps.setString(1, args[1].replaceAll("'", ""));
+                ps.setLong(2, System.currentTimeMillis() / 1000L);
+                ps.setInt(3, J2MC_Manager.getServerID());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    PreparedStatement ps2 = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM items WHERE id = ?");
+                    ps2.setInt(1, rs.getInt("id"));
+                    ResultSet rs2 = ps2.executeQuery();
+                    if (rs2.next()) {
+                        do {
+                            player.getInventory().addItem(new ItemStack(rs2.getInt("item"), rs2.getInt("quantity")));
+                        } while (rs2.next());
+                        sender.sendMessage(ChatColor.GREEN + "Coupon successfully redeemed!");
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "That coupon code is not valid");
+                }
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "Please enter a valid ID number");
+            } catch (SQLException e) {
+                this.plugin.getLogger().log(Level.SEVERE, "Error redeeming coupon", e);
+            }
             return;
         }
         if (args.length == 1) {
