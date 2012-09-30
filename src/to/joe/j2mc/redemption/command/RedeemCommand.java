@@ -81,7 +81,7 @@ public class RedeemCommand extends MasterCommand {
                     if (rs2.next()) {
                         sender.sendMessage(ChatColor.GREEN + "ID " + Integer.parseInt(args[1]) + " contains the following items");
                         do {
-                            sender.sendMessage(ChatColor.GREEN + " "+ rs2.getInt("quantity") + "x " + ChatColor.GOLD + Material.getMaterial(rs2.getInt("item")));
+                            sender.sendMessage(ChatColor.GREEN + ""+ rs2.getInt("quantity") + "x " + ChatColor.GOLD + Material.getMaterial(rs2.getInt("item")));
                         } while (rs2.next());
                     } else {
                         sender.sendMessage(ChatColor.RED + "ID " + Integer.parseInt(args[1]) + " has no items to redeem");
@@ -108,21 +108,56 @@ public class RedeemCommand extends MasterCommand {
                     if (rs2.next()) {
                         do {
                             player.getInventory().addItem(new ItemStack(rs2.getInt("item"), rs2.getInt("quantity")));
+                            sender.sendMessage(ChatColor.GREEN + ""+ rs2.getInt("quantity") + "x " + ChatColor.GOLD + Material.getMaterial(rs2.getInt("item")));
                         } while (rs2.next());
+                        PreparedStatement ps3 = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("UPDATE coupons SET player = ?, redeemed = ? WHERE id = ?");
+                        ps3.setString(1, player.getName());
+                        ps3.setLong(2, System.currentTimeMillis() / 1000L);
+                        ps3.setInt(3, rs.getInt("id"));
+                        ps3.execute();
+                        this.plugin.getLogger().info(player.getName() + " has redeemed coupon with id " + rs.getInt("id"));
                         sender.sendMessage(ChatColor.GREEN + "Coupon successfully redeemed!");
                     }
                 } else {
-                    sender.sendMessage(ChatColor.RED + "That coupon code is not valid");
+                    sender.sendMessage(ChatColor.RED + "That coupon code is not valid. It may have been redeemed already or may not exist.");
                 }
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Please enter a valid ID number");
             } catch (SQLException e) {
                 this.plugin.getLogger().log(Level.SEVERE, "Error redeeming coupon", e);
             }
             return;
         }
         if (args.length == 1) {
-            //TODO Redeem items
+            try {
+                PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM coupons WHERE player LIKE ? AND (expiry > ? OR expiry IS NULL) AND (server = ? OR server IS NULL) AND id = ? and redeemed IS NULL");
+                ps.setString(1, player.getName());
+                ps.setLong(2, System.currentTimeMillis() / 1000L);
+                ps.setInt(3, J2MC_Manager.getServerID());
+                ps.setInt(4, Integer.parseInt(args[0]));
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    PreparedStatement ps2 = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("SELECT * FROM items WHERE id = ?");
+                    ps2.setInt(1, rs.getInt("id"));
+                    ResultSet rs2 = ps2.executeQuery();
+                    if (rs2.next()) {
+                        do {
+                            player.getInventory().addItem(new ItemStack(rs2.getInt("item"), rs2.getInt("quantity")));
+                            sender.sendMessage(ChatColor.GREEN + ""+ rs2.getInt("quantity") + "x " + ChatColor.GOLD + Material.getMaterial(rs2.getInt("item")));
+                        } while (rs2.next());
+                        PreparedStatement ps3 = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("UPDATE coupons SET redeemed = ? WHERE id = ?");
+                        ps3.setLong(1, System.currentTimeMillis() / 1000L);
+                        ps3.setInt(2, rs.getInt("id"));
+                        ps3.execute();
+                        this.plugin.getLogger().info(player.getName() + " has redeemed items with id " + rs.getInt("id"));
+                        sender.sendMessage(ChatColor.GREEN + "Items successfully redeemed!");
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "That ID number is not valid. It may have been redeemed already or may not exist.");
+                }
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "Please enter a valid ID number");
+            } catch (SQLException e) {
+                this.plugin.getLogger().log(Level.SEVERE, "Error redeeming items", e);
+            }
             return;
         }
     }
