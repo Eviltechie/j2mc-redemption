@@ -106,6 +106,7 @@ public class RedeemCommand extends MasterCommand {
                     ps2.setInt(1, rs.getInt("id"));
                     ResultSet rs2 = ps2.executeQuery();
                     if (rs2.next()) {
+                        sender.sendMessage(ChatColor.GREEN + "Redeeming coupon " + ChatColor.GOLD + args[1]);
                         do {
                             player.getInventory().addItem(new ItemStack(rs2.getInt("item"), rs2.getInt("quantity")));
                             sender.sendMessage(ChatColor.GREEN + ""+ rs2.getInt("quantity") + "x " + ChatColor.GOLD + Material.getMaterial(rs2.getInt("item")));
@@ -139,6 +140,7 @@ public class RedeemCommand extends MasterCommand {
                     ps2.setInt(1, rs.getInt("id"));
                     ResultSet rs2 = ps2.executeQuery();
                     if (rs2.next()) {
+                        sender.sendMessage(ChatColor.GREEN + "Redeeming ID " + ChatColor.GOLD + rs.getInt("id"));
                         do {
                             player.getInventory().addItem(new ItemStack(rs2.getInt("item"), rs2.getInt("quantity")));
                             sender.sendMessage(ChatColor.GREEN + ""+ rs2.getInt("quantity") + "x " + ChatColor.GOLD + Material.getMaterial(rs2.getInt("item")));
