@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `coupons` (
   `created` int(12) NOT NULL,
   `creator` varchar(32) NOT NULL,
   `code` int(12) DEFAULT NULL,
-  `player` int(32) DEFAULT NULL,
+  `player` varchar(32) DEFAULT NULL,
   `redeemed` int(12) DEFAULT NULL,
   `expiry` int(12) DEFAULT NULL,
   `server` tinyint(4) DEFAULT NULL,

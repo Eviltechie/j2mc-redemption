@@ -38,7 +38,7 @@ public class RedeemCommand extends MasterCommand {
         }
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "/redeem list -> shows a list of what you may redeem");
-            sender.sendMessage(ChatColor.RED + "/redeem details <number> -> shows a list of items you will receive");
+            sender.sendMessage(ChatColor.RED + "/redeem details <number> -> shows a list of items you will get");
             sender.sendMessage(ChatColor.RED + "/redeem coupon <code> -> redeems a coupon");
             sender.sendMessage(ChatColor.RED + "/redeem <number> -> redeems items");
             return;
