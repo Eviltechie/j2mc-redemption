@@ -16,17 +16,18 @@ public class J2MC_Redemption extends JavaPlugin {
     }
 
     public static int newCoupon(String playerCode, boolean isCode, String creator, long expiry, int server) throws SQLException {
-        PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, ?, expiry, server) VALUES (?,?,?,?,?)");
+        PreparedStatement ps;
         if (isCode) {
-            ps.setString(1, "code");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, code, expiry, server) VALUES (?,?,?,?,?)");
         } else {
-            ps.setString(1, "player");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, player, expiry, server) VALUES (?,?,?,?,?)");
         }
-        ps.setLong(2, System.currentTimeMillis() / 1000L);
-        ps.setString(3, creator);
-        ps.setString(4, playerCode);
-        ps.setLong(5, expiry);
-        ps.setInt(6, server);
+        ps.setLong(1, System.currentTimeMillis() / 1000L);
+        ps.setString(2, creator);
+        ps.setString(3, playerCode);
+        ps.setLong(4, expiry);
+        ps.setInt(5, server);
+        ps.execute();
         ResultSet rs = ps.getGeneratedKeys();
         if (rs.next())
             return rs.getInt(1);
@@ -37,14 +38,15 @@ public class J2MC_Redemption extends JavaPlugin {
     public static int newCoupon(String playerCode, boolean isCode, String creator, long expiry) throws SQLException {
         PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, ?, expiry) VALUES (?,?,?,?)");
         if (isCode) {
-            ps.setString(1, "code");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, code, expiry) VALUES (?,?,?,?)");
         } else {
-            ps.setString(1, "player");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, player, expiry) VALUES (?,?,?,?)");
         }
-        ps.setLong(2, System.currentTimeMillis() / 1000L);
-        ps.setString(3, creator);
-        ps.setString(4, playerCode);
-        ps.setLong(5, expiry);
+        ps.setLong(1, System.currentTimeMillis() / 1000L);
+        ps.setString(2, creator);
+        ps.setString(3, playerCode);
+        ps.setLong(4, expiry);
+        ps.execute();
         ResultSet rs = ps.getGeneratedKeys();
         if (rs.next())
             return rs.getInt(1);
@@ -53,16 +55,17 @@ public class J2MC_Redemption extends JavaPlugin {
     }
     
     public static int newCoupon(String playerCode, boolean isCode, String creator, int server) throws SQLException {
-        PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, ?, server) VALUES (?,?,?,?)");
+        PreparedStatement ps;
         if (isCode) {
-            ps.setString(1, "code");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, code, server) VALUES (?,?,?,?)");
         } else {
-            ps.setString(1, "player");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, player, server) VALUES (?,?,?,?)");
         }
-        ps.setLong(2, System.currentTimeMillis() / 1000L);
-        ps.setString(3, creator);
-        ps.setString(4, playerCode);
-        ps.setInt(6, server);
+        ps.setLong(1, System.currentTimeMillis() / 1000L);
+        ps.setString(2, creator);
+        ps.setString(3, playerCode);
+        ps.setInt(4, server);
+        ps.execute();
         ResultSet rs = ps.getGeneratedKeys();
         if (rs.next())
             return rs.getInt(1);
@@ -71,15 +74,16 @@ public class J2MC_Redemption extends JavaPlugin {
     }
     
     public static int newCoupon(String playerCode, boolean isCode, String creator) throws SQLException {
-        PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, ?) VALUES (?,?,?)");
+        PreparedStatement ps;
         if (isCode) {
-            ps.setString(1, "code");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, code) VALUES (?,?,?)");
         } else {
-            ps.setString(1, "player");
+            ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, player) VALUES (?,?,?)");
         }
-        ps.setLong(2, System.currentTimeMillis() / 1000L);
-        ps.setString(3, creator);
-        ps.setString(4, playerCode);
+        ps.setLong(1, System.currentTimeMillis() / 1000L);
+        ps.setString(2, creator);
+        ps.setString(3, playerCode);
+        ps.execute();
         ResultSet rs = ps.getGeneratedKeys();
         if (rs.next())
             return rs.getInt(1);
@@ -96,7 +100,7 @@ public class J2MC_Redemption extends JavaPlugin {
     }
     
     public static void addItem(int id, int item) throws SQLException {
-        PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("INSERT INTO items (id, item) VALUES (?,?)");
+        PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("INSERT INTO items (id, item, quantity) VALUES (?,?,1)");
         ps.setInt(1, id);
         ps.setInt(2, item);
         ps.execute();
