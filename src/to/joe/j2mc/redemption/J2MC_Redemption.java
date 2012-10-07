@@ -15,6 +15,16 @@ public class J2MC_Redemption extends JavaPlugin {
         this.getCommand("redeem").setExecutor(new RedeemCommand(this));
     }
 
+    /**
+     * Adds a new coupon
+     * @param playerCode Either a 12 character coupon code or a player name
+     * @param isCode True if playerCode is a coupon, false if it is a player name
+     * @param creator Entity that created this coupon
+     * @param expiry Expiry date of the coupon in unix time
+     * @param server The server this coupon can be redeemed on
+     * @return The id of the newly added coupon
+     * @throws SQLException
+     */
     public static int newCoupon(String playerCode, boolean isCode, String creator, long expiry, int server) throws SQLException {
         PreparedStatement ps;
         if (isCode) {
@@ -35,6 +45,15 @@ public class J2MC_Redemption extends JavaPlugin {
             return -1;
     }
     
+    /**
+     * Adds a new coupon
+     * @param playerCode Either a 12 character coupon code or a player name
+     * @param isCode True if playerCode is a coupon, false if it is a player name
+     * @param creator Entity that created this coupon
+     * @param expiry Expiry date of the coupon in unix time
+     * @return The id of the newly added coupon
+     * @throws SQLException
+     */
     public static int newCoupon(String playerCode, boolean isCode, String creator, long expiry) throws SQLException {
         PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementWithGeneratedKeys("INSERT INTO coupons (created, creator, ?, expiry) VALUES (?,?,?,?)");
         if (isCode) {
@@ -54,6 +73,15 @@ public class J2MC_Redemption extends JavaPlugin {
             return -1;
     }
     
+    /**
+     * Adds a new coupon
+     * @param playerCode Either a 12 character coupon code or a player name
+     * @param isCode True if playerCode is a coupon, false if it is a player name
+     * @param creator creator Entity that created this coupon
+     * @param server The server this coupon can be redeemed on
+     * @return The id of the newly added coupon
+     * @throws SQLException
+     */
     public static int newCoupon(String playerCode, boolean isCode, String creator, int server) throws SQLException {
         PreparedStatement ps;
         if (isCode) {
@@ -73,6 +101,14 @@ public class J2MC_Redemption extends JavaPlugin {
             return -1;
     }
     
+    /**
+     * Adds a new coupon
+     * @param playerCode Either a 12 character coupon code or a player name
+     * @param isCode True if playerCode is a coupon, false if it is a player name
+     * @param creator creator Entity that created this coupon
+     * @return The id of the newly added coupon
+     * @throws SQLException
+     */
     public static int newCoupon(String playerCode, boolean isCode, String creator) throws SQLException {
         PreparedStatement ps;
         if (isCode) {
@@ -91,6 +127,13 @@ public class J2MC_Redemption extends JavaPlugin {
             return -1;
     }
 
+    /**
+     * Adds a quantity of item to an already existing coupon
+     * @param id The id of a coupon, returned from addCoupon()
+     * @param item The id of the item
+     * @param quantity How many of the item to add
+     * @throws SQLException
+     */
     public static void addItem(int id, int item, int quantity) throws SQLException {
         PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("INSERT INTO items (id, item, quantity) VALUES (?,?,?)");
         ps.setInt(1, id);
@@ -99,6 +142,12 @@ public class J2MC_Redemption extends JavaPlugin {
         ps.execute();
     }
     
+    /**
+     * Adds a single item to an already existing coupon
+     * @param id The id of a coupon, returned from addCoupon()
+     * @param item The id of the item
+     * @throws SQLException
+     */
     public static void addItem(int id, int item) throws SQLException {
         PreparedStatement ps = J2MC_Manager.getMySQL().getFreshPreparedStatementHotFromTheOven("INSERT INTO items (id, item, quantity) VALUES (?,?,1)");
         ps.setInt(1, id);
